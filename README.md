@@ -47,15 +47,15 @@ Note: conn is a JDBC Connection object. Creation of one of those is beyond the s
 Create an instance:
 ```java
 User user = new User(333334444);
-
+```
 Save:
-
+```java
 manager.store(user);
-
+```
 To Load:
-
+```java
 User user = manager.load(333334444);
-
+```
 Annotations
 
 @Id
@@ -79,7 +79,6 @@ Tells RedBean to create a unique index on annotated field
 Tells RedBean to declare Database Column NOT NULL
 
 @Table(name="$name")
-```
 Tells RedBean to use $name for table name for this Class. Scope: Class
 
 Notes
