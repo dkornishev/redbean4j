@@ -1,6 +1,8 @@
 _WARNING_
 *This is an abandoned project that has not been in development for many years*
 
+*Recovered via wayback machine and Java Decompiler http://jd.benow.ca/*
+
 RedBean4j is a "fire and forget" ORM for Java 6+ that performs automatic database management based on Java code.
 
 It is based on wonderful pioneering work done by Gabor de Mooij in his RedBeanPHP
