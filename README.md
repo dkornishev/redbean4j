@@ -1,7 +1,5 @@
 _WARNING_
-_WARNING_
 *This is an abandoned project that has not been in development for many years*
-_WARNING_
 
 RedBean4j is a "fire and forget" ORM for Java 6+ that performs automatic database management based on Java code.
 
