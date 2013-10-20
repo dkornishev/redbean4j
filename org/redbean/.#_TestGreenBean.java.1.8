@@ -1,0 +1,144 @@
+package org.greenbean;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.greenbean.annotations.Id;
+import org.greenbean.annotations.NotNull;
+import org.greenbean.annotations.Table;
+import org.greenbean.util.Log;
+
+import com.thoughtworks.xstream.XStream;
+
+//	TODO Generated Keys
+// TODO Loggers
+//	TODO Delete
+//	TODO Test non-int keys
+//	TODO Regression tests
+//	TODO Saving and loading Object Graphs
+public class _TestGreenBean
+{
+	private static final String SCHEMA = "greenbean";
+
+	public static void main(String[] args) throws Exception
+	{
+		Connection conn = createConnection();
+
+		//meta(conn);
+
+		EntityManager pm = new EntityManager(conn);
+		pm.store(new TestData());
+
+		TestData td = pm.load(TestData.class, 2);
+
+		XStream xs = new XStream();
+		Log.info(xs.toXML(td));
+	}
+
+	/**
+	 * @param conn
+	 * @throws SQLException
+	 */
+	private static void meta(Connection conn) throws SQLException
+	{
+		DatabaseMetaData dbMeta = conn.getMetaData();
+		ResultSet rs = dbMeta.getTables(null, SCHEMA, "%", null);
+
+		while (rs.next())
+		{
+			Log.info(rs.getString("TABLE_NAME"));
+		}
+		Log.info("*************************************************");
+
+		rs = dbMeta.getPrimaryKeys(null, SCHEMA, "test_data");
+
+		while (rs.next())
+		{
+			Log.info("Primary Key Column: " + rs.getString("COLUMN_NAME"));
+		}
+
+		Log.info("*************************************************");
+
+		rs = dbMeta.getColumns(null, SCHEMA, "test_data", "%");
+
+		List<String> columns = new ArrayList<String>();
+		for (int i = 1; i < rs.getMetaData().getColumnCount(); i++)
+		{
+			String columnName = rs.getMetaData().getColumnName(i);
+			columns.add(columnName);
+		}
+
+		while (rs.next())
+		{
+			for (String cn : columns)
+			{
+				Log.info(cn + ": " + rs.getString(cn));
+			}
+			Log.info("*************************************************");
+		}
+
+		rs = conn.createStatement().executeQuery("select * from test_data where 1=0");
+		ResultSetMetaData meta = rs.getMetaData();
+
+		for (int i = 1; i < meta.getColumnCount(); i++)
+		{
+			Log.info(meta.getColumnName(i) + ":" + meta.getColumnTypeName(i) + " Nullible: " + meta.isNullable(i) + " SIGNED: " + meta.isSigned(i));
+			// 0 = NOT NULL
+			// 1 = NULL
+			// 2 = UNKNOWN
+		}
+
+		System.exit(1);
+	}
+
+	private static Connection createConnection() throws ClassNotFoundException, SQLException
+	{
+		Class.forName("com.mysql.jdbc.Driver");
+		String url = "jdbc:mysql://localhost:3306/greenbean";
+		return DriverManager.getConnection(url, SCHEMA, "gr33nb3an");
+
+	}
+
+	@SuppressWarnings("unused")
+	public static class BaseTestData
+	{
+		private static final String ST_F        = "STATIC_FINAL";
+		private String              str         = "Some string";
+		private Boolean             bool        = true;
+
+		private Integer             someInt     = 213423423;
+
+		@NotNull
+		private Integer             someInteger = new Integer(23423432);
+		private Date                date        = new Date();
+
+		private transient String    temp        = "I am temp!";
+
+		private TestEnum            enm         = TestEnum.VALUE1;
+
+		@NotNull
+		private String              longText    = "For example, a VARCHAR(255) column can hold a string with a maximum length of 255 characters. Assuming that the column uses the latin1 character set (one byte per character), the actual storage required is the length of the string (L), plus one byte to record the length of the string. For the string 'abcd', L is 4 and the storage requirement is five bytes. If the same column is instead declared to use the ucs2 double-byte character set, the storage requirement is 10 bytes: The length of 'abcd'  is eight bytes and the column requires two bytes to store lengths because the maximum length is greater than 255 (up to 510 bytes).";
+	}
+
+	@Table(name = "test_data")
+	@SuppressWarnings("unused")
+	public static class TestData extends BaseTestData
+	{
+		private String  decField = "I am declared!";
+
+		@Id(generated = true)
+		private Integer id3       = null;
+	}
+
+	private enum TestEnum
+	{
+		VALUE1, VALUE2, VALUE3
+	}
+}
